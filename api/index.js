@@ -1,12 +1,12 @@
 import Cors from 'cors';
 
-// CORS 미들웨어 설정
+// CORS 설정 (methods에 OPTIONS 포함)
 const cors = Cors({
-  origin: 'https://campaign.saramin.co.kr', // 요청을 허용할 origin
-  methods: ['POST'],
+  origin: 'https://campaign.saramin.co.kr',
+  methods: ['GET', 'HEAD', 'POST', 'OPTIONS'],
 });
 
-// 미들웨어 실행을 Promise 형태로 변환
+// 미들웨어 실행 함수
 function runMiddleware(req, res, fn) {
   return new Promise((resolve, reject) => {
     fn(req, res, (result) => {
@@ -17,8 +17,12 @@ function runMiddleware(req, res, fn) {
 }
 
 export default async function handler(req, res) {
-  // CORS 허용 처리
   await runMiddleware(req, res, cors);
+
+  // ✅ OPTIONS 요청에 응답
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
