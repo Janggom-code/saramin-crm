@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   const response = await fetch('https://www.saramin.co.kr/zf_user/member/ai-interview/purchase', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' ,'Cookie':'UID:5653686' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' ,'Cookie': 'UID=5653686; AUID=5653686; CUST_NO=5653686;' },
     body: new URLSearchParams({
       payment_page: 'ai_interview_introduce',
       item_id: 'ai_interview_package_3',
