@@ -1,12 +1,10 @@
 import Cors from 'cors';
 
-// CORS 설정 (methods에 OPTIONS 포함)
 const cors = Cors({
   origin: 'https://campaign.saramin.co.kr',
   methods: ['GET', 'HEAD', 'POST', 'OPTIONS'],
 });
 
-// 미들웨어 실행 함수
 function runMiddleware(req, res, fn) {
   return new Promise((resolve, reject) => {
     fn(req, res, (result) => {
@@ -19,7 +17,6 @@ function runMiddleware(req, res, fn) {
 export default async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
-  // ✅ OPTIONS 요청에 응답
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -42,8 +39,17 @@ export default async function handler(req, res) {
       }),
     });
 
-    const data = await response.text();
-    res.status(200).json(data);
+    const html = await response.text();
+    const match = html.match(/location\.href\s*=\s*["']([^"']+)["']/);
+
+    if (match && match[1]) {
+      res.status(200).json({
+        status: 'success',
+        url: { pc: match[1] },
+      });
+    } else {
+      res.status(500).json({ status: 'fail', message: 'Redirect URL not found' });
+    }
   } catch (error) {
     console.error('[Proxy Error]', error);
     res.status(500).json({ error: 'Internal Server Error' });
